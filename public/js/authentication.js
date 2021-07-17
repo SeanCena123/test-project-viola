@@ -37,7 +37,9 @@ let inputPasswordsignin = document.getElementById("inputPassword");
 function signin() {
     email = inputEmailsignin.value
     password = inputPasswordsignin.value
-    auth.signInWithEmailAndPassword(email, password).then(cred => {
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(() => {
+        auth.signInWithEmailAndPassword(email, password)
+        socket.emit('active', 'value')
     })
     event.preventDefault();
 }

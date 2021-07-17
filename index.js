@@ -139,6 +139,20 @@ var io = require('socket.io')(server);
 
 io.on('connection', function(socket) {
 	console.log("User: "+socket.id+", Connected.");
+  
+  var ref = firebase.database().ref("users/ada");
+  ref.onDisconnect().update({
+    onlineState: false,
+    status: "I'm offline."
+  });
+
+  socket.on('active', function(data) {
+    var ref = firebase.database().ref("users/ada");
+    ref.update({
+       onlineState: true,
+       status: "I'm online."
+    });
+  });
 
   socket.on('authtok', async function(idToken) {
     var uid;
