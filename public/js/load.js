@@ -26,7 +26,7 @@ const auth = firebase.auth();
 document.getElementById('homeBody').style.visibility = "hidden";
 auth.onAuthStateChanged(user => {
     if (user) {
-        firebase.auth().currentUser.getIdToken(false).then(function(idToken) {
+        firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
             socket.emit('authtok', idToken)  
         })
         socket.on('authtok', function(data) {
