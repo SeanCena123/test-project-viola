@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Viola Education</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <link rel="stylesheet" href="css/jqmath-0.4.3.css">
+    <script src="js/jquery-1.4.3.min.js"></script>
+
+</head>
+  
+<body class="css-selector">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" style="outline: black; ">        
+    <a class="navbar-brand" href="/" style="color: #31b08f;;"><b>VIOLA</b></a>        
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">          
+      <span class="navbar-toggler-icon"></span>        
+    </button>              
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">          
+      <ul class="navbar-nav mr-auto">            
+        <li class="nav-item">              
+          <a class="nav-link" href="/database" style="cursor: pointer">Database</a>            
+        </li>            
+        <li class="nav-item">              
+          <a class="nav-link" href="#">About</a>            
+        </li>          
+      </ul>          
+      <form class="form-inline my-2 my-lg-0">            
+        <a class="btn my-2 my-sm-0" type="submit" style="color: white" href="/login">Account</a>          
+      </form>        
+    </div>      
+  </nav>
+
+  <form class="form-signin">
+    <!-- <img class="mb-4" src="img/bootstrap-solid.svg" alt="" width="72" height="72"> -->
+    <h1 class="h3 mb-3 font-weight-normal" style="color: #31b08f; font-size: 65px;"><b>VIOLA</b></h1> <br>
+    <!-- <h1 class="h3 mb-3 font-weight-normal" style="color: #31b08f; font-size: 15px;">Shean De Fonseka</h1> <br> -->
+      <div id="credentials"> 
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+      </div>
+  
+      <div id="error-placement-login">
+      </div>
+  
+      <center>
+        <button class="btn btn-lg btn-success btn-block" style="width: 35%;" type="submit" onclick="signin()">Confirm</button>
+      </center><br>
+
+      <center>
+        <button class="btn btn-lg btn-danger btn-block" style="width: 35%;" type="submit" onclick="signout()">Signout</button>
+      </center><br>
+    </form>
+  
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="js/authentication.js"></script>
+</body>

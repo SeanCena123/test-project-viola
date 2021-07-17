@@ -1,69 +1,174 @@
-
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+    <title>Viola Education</title>
 
-    <title>Viola</title>
-
-    <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="css/jqmath-0.4.3.css">
+    <script src="js/jquery-1.4.3.min.js"></script>
+    <script src="js/jqmath-etc-0.4.6.min.js" charset="utf-8"></script>
 
-    <!-- Custom styles for this template -->
-    <link href="css/main.css" rel="stylesheet">
+</head>
+  
+<body class="css-selector" id="homeBody">
 
-  </head>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" style="outline: black; ">        
+    <a class="navbar-brand" href="/" style="color: #31b08f;;"><b>VIOLA</b></a>        
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">          
+      <span class="navbar-toggler-icon"></span>        
+    </button>              
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">          
+      <ul class="navbar-nav mr-auto">            
+        <li class="nav-item">              
+          <a class="nav-link" href="/database" style="cursor: pointer">Database</a>            
+        </li>            
+        <li class="nav-item">              
+          <a class="nav-link" href="#">About</a>            
+        </li>          
+      </ul>          
+      <form class="form-inline my-2 my-lg-0">            
+        <a class="btn my-2 my-sm-0" type="submit" style="color: white" href="/login">Account</a>          
+      </form>        
+    </div>      
+  </nav>
 
-  <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Project name</a>
+
+  <div class="" style="color: #31b08f;">
+    <h1 class="display-4" style="margin-bottom: -2%"> <b> Viola Education Database </b></h1>
+    <h1 class="display-10" style="margin-bottom: 7.5%; font-size: 1.1em;"> Enhance your VCE experience by exploring our database for past questions </h1>
+  </div>
+
+  <div class="container d-flex justify-content-center" style="margin-top: -5%;">
+    <div class="card mt-2 p-4" style="width: 100%;">
+        
+        <div class="input-group mb-3"> 
+          <input id="searchinput" type="text" class="form-control" placeholder="Type your question...">
+            <div class="input-group-append">
+              <button class="btn btn-success" id="buttonsearch"><i class="fas fa-search"></i>Search</button>
+            </div>
+        </div> 
+
+        <div style="text-align: center; margin-right: 20px">
+          <div style="display:inline-block;">
+            <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenuButtonsubject" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Subject</button>
+    
+            <div class="dropdown-menu dropdown" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("None", 0)'>None</a>
+              <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("Methods", 0)'>Methods</a>
+              <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("Physics", 0)'>Physics</a>
+              <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("Chemistry", 0)'>Chemistry</a>
+              <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("Further", 0)'>Further</a>
+            </div>
+          </div>
+
+          <div style="display:inline-block">
+            <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenuButtonsource" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Source</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("None", 1)'>None</a>
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("VCAA", 1)'>VCAA</a>
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("NHT", 1)'>NHT</a>
+              </div> 
+          </div>
+
+
+          <div style="display:inline-block">
+            <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenuButtonyear" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Year</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("None", 2)'>None</a>
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("2019", 2)'>2019</a>
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("2018", 2)'>2018</a>
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("2017", 2)'>2017</a>
+              </div> 
+          </div>
+
+
+          <div style="display:inline-block">
+            <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenuButtonunit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Unit</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("None", 3)'>None</a>
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("Unit 3", 3)'>Unit 3</a>
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("Unit 4", 3)'>Unit 4</a>
+              </div> 
+          </div>
+
+          <div style="display:inline-block">
+            <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="dropdownMenuButtontopic" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topic</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="topicid">
+                <a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("None", 4)'>None</a>
+              </div> 
+          </div> 
+
+            <div id="loadingicon" style="display:inline-block; ">
+              <!-- <div class="spinner-border spinner-border-sm text-success" role="status">
+                <span class="sr-only">Loading...</span>
+              </div> -->
+            </div>
+
+          <hr>
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#wan">Button1</a></li>
-            <li><a href="#too">Button2</a></li>
-            <li><a href="#phree">Button3</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
 
-    <div class="container">
+        <div id="resultamount"> </div>
 
-      <div class="starter-template">
-        <h1>Viola</h1>
-        <img id="headshot" src="headshot.jpg" alt="Mountain View">
-        <p class="lead">He will never get a girlfriend.<br> Not with that face.</p>
-      </div>
-
-    </div><!-- /.container -->
+        <div id="resultsearch"> </div>
 
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- <div class="d-flex flex-row justify-content-between mb-3" id="scrollable">
+          <div class="d-flex flex-column p-3" style="max-width: 1100px; height: 80px;">
+            <p class="mb-2 main">
+              <b id="bold" style="border: 1px solid green;">
+                Physics Multiple Choice Unit 3 Q24 Speical Relativity
+              </b>
+            </p>
+            <a id="hoverprinc" style="color: grey;">
+                <small class="text-muted">
+                    <div id="placeholder" style="position: absolute; border: 1px solid green; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" height="20px">A positron with a velocity of <b style="color:darkcyan;"> 1.4 × 106 m s−1 </b> is injected into a uniform magnetic field of 4.0 × 10−2 T, directed into the page, as shown in the diagram below. It moves in a vacuum in a semicircle of radius r. The mass of the positron is 9.1 × 10−31 kg and the charge on the positron is 1.6 × 10−19 C. Ignore relativistic effects.</div>
+                    <marquee id="mymarquee" behavior="scroll" direction="left" scrollamount="15">
+                      A positron with a velocity of <b style="color:darkcyan;"> 1.4 × 106 m s−1 </b> is injected into a uniform magnetic field of 4.0 × 10−2 T, directed into the page, as shown in the diagram below. It moves in a vacuum in a semicircle of radius r. The mass of the positron is 9.1 × 10−31 kg and the charge on the positron is 1.6 × 10−19 C. Ignore relativistic effects.</marquee>
+                </small>
+            </a>
+          </div>
+        </div>
+        <br>   -->
 
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+        <div id="pageid"> 
 
-    <script src="https://cdn.socket.io/socket.io-2.3.0.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
-  </body>
-</html>
+          <!-- <nav aria-label="...">
+            <ul class="pagination">
+              <li class="page-item disabled" id="previous" onclick="previousPagelst()">
+                <a class="page-link" href="#">Previous</a>
+              </li>
+              <li class="page-item active" id="fbut" onclick="checkvalidbutton(document.getElementById('fbutname').innerHTML)">
+                <a class="page-link" href="#" id="fbutname">1</a>
+              </li>
+              <li class="page-item" id="sbut" onclick="checkvalidbutton(document.getElementById('sbutname').innerHTML)">
+                <a class="page-link" href="#" id="sbutname">2</a>
+              </li>
+              <li class="page-item" id="tbut" onclick="checkvalidbutton(document.getElementById('tbutname').innerHTML)">
+                <a class="page-link" href="#" id="tbutname">3</a>
+              </li>
+              <li class="page-item disabled" id="next" onclick="nextPagelst()">
+                <a class="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </nav> -->
+
+        </div>
+
+
+
+    </div>
+  </div>
+
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/main.js"></script>
+</body>

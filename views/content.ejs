@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Viola Education</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="css/jqmath-0.4.3.css">
+    <script src="js/jquery-1.4.3.min.js"></script>
+    <script src="js/jqmath-etc-0.4.6.min.js" charset="utf-8"></script>
+
+</head>
+  
+<style>
+  #videohover {transition: background 0.5s ease-in-out;}
+  #videohover:hover {background: #D6FDEA;}
+  .container {width: 500px; border: 5px solid rgb(111,41,97); border-radius: .5em; padding: 10px;}
+  .navbar-custom {background-color: #3bc49e;} 
+  .btn-custom {background-color: #3bc49e;} 
+  .white-class {background-color: white;}
+  #manipulate {position:absolute; width:300px; background: white; bottom:0px; right:25%; left:50%; margin-left:-150px;}
+  a {color: white}
+  .btn {background: #00CCA1; border: #00CCA1}
+  .btn:hover {background: #00B8A1; border: #00B8A1}
+  .btn:click {background: #00B8A1; border: #00B8A1}
+  .btn:active {background: #00B8A1; border: #00B8A1}
+  .btn:disable {background: #00CCA1; border: #00CCA1}
+  .btn:focus {background: #00B8A1; border: #00B8A1}
+  .btn:visited {color: purple;}
+  #viewfileswritten {cursor: pointer;}
+  </style>
+  
+  <body class="css-selector" id="homeBody">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" style="outline: black; ">        
+      <a class="navbar-brand" href="/" style="color: #31b08f;;"><b>VIOLA</b></a>        
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">          
+        <span class="navbar-toggler-icon"></span>        
+      </button>              
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">          
+        <ul class="navbar-nav mr-auto">            
+          <li class="nav-item">              
+            <a class="nav-link" href="/database" style="cursor: pointer">Database</a>            
+          </li>            
+          <li class="nav-item">              
+            <a class="nav-link" href="#">About</a>            
+          </li>          
+        </ul>          
+        <form class="form-inline my-2 my-lg-0">            
+          <a class="btn my-2 my-sm-0" type="submit" style="color: white" href="/login">Account</a>          
+        </form>        
+      </div>      
+    </nav>           
+  
+    <br>
+    <div id="container"> 
+      <div class="" style="color: #31b08f;">
+        <h1 class="display-4" style="margin-left: 20px"> <b id="examcontent"> </b></h1>
+        
+        <br>
+  
+        <h1 class="display-10" style="font-size: 1.1em; margin-left: 20px" id="titlecontent"></h1> 
+        <h1 class="display-10" style="font-size: 0.8em; margin-left: 20px; color: grey; width: 75%" id="descriptioncontent"> </h1>
+      </div>
+    </div>
+  
+    <br>
+  
+    <div id="videohover" >
+      <hr style="color: green; opacity: 100%; "> <br>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <h1 id="viewfiles" class="display-10" style="font-size: 1.75em; margin-left: 20px; cursor: pointer;" >Examination Paper</h1> 
+      </div>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <p class="display-10" style="font-size: 0.9em; margin-left: 20px; margin-top: -15px; margin-bottom: -50px; cursor: pointer;">View the exam file the specific question is found in.</p> 
+      </div> 
+      <hr style="margin-top: 35px"> 
+    </div>
+      <div id="sourcepaperpdf" style="color: #31b08f;"></div> 
+  
+  
+    <div id="videohover" >
+      <hr style="color: green; opacity: 100%; "> <br>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <h1 id="viewfilesvideo" class="display-10" style="font-size: 1.75em; margin-left: 20px; cursor: pointer;" >Video Explaination</h1> 
+      </div>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <p class="display-10" style="font-size: 0.9em; margin-left: 20px; margin-top: -15px; margin-bottom: -50px; cursor: pointer;">View a video explaination of the specific question.</p> 
+      </div> 
+      <hr style="margin-top: 35px"> 
+    </div>
+      <div id="sourcevideo" style="color: #31b08f;"></div> 
+  
+    <div id="videohover" >
+      <hr style="color: green; opacity: 100%; "> <br>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <h1 id="viewfileswritten" class="display-10" style="font-size: 1.75em; margin-left: 20px; cursor: pointer;" >Written Explaination</h1> 
+      </div>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <p class="display-10" style="font-size: 0.9em; margin-left: 20px; margin-top: -15px; margin-bottom: -50px; cursor: pointer;">View a written response explaining in depth the theory and answer to the question.</p> 
+      </div> 
+      <hr style="margin-top: 35px"> 
+    </div>
+      <div id="sourcewritten" style="color: #31b08f;"></div> 
+  
+      <div id="videohover">
+        <hr style="color: green; opacity: 100%; "> <br>
+    
+        <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+          <h1 id="viewfilesexternalexplain" class="display-10" style="font-size: 1.75em; margin-left: 20px; cursor: pointer;" >External Explaination</h1> 
+        </div>
+    
+        <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+          <p class="display-10" style="font-size: 0.9em; margin-left: 20px; margin-top: -15px; margin-bottom: -50px; cursor: pointer;">View a written response explaining in depth the theory and answer to the question.</p> 
+        </div> 
+        <hr style="margin-top: 35px"> 
+      </div>
+        <div id="sourceexternalwritten" style="color: #31b08f;"></div>
+  
+        <div id="videohover">
+          <hr style="color: green; opacity: 100%; "> <br>
+      
+          <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+            <h1 id="viewfilessolution" class="display-10" style="font-size: 1.75em; margin-left: 20px; cursor: pointer;" >VCAA Explaination</h1> 
+          </div>
+      
+          <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+            <p class="display-10" style="font-size: 0.9em; margin-left: 20px; margin-top: -15px; margin-bottom: -50px; cursor: pointer;">View VCAA's response for examiner's to mark the question.</p> 
+          </div> 
+          <hr style="margin-top: 35px"> 
+        </div>
+          <div id="sourcesolutionpdf" style="color: #31b08f;"></div>
+  
+  
+    <div id="videohover">
+      <hr style="color: green; opacity: 100%; "> <br>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <h1 id="viewfilesexternal" class="display-10" style="font-size: 1.75em; margin-left: 20px; cursor: pointer;" >External Sources</h1> 
+      </div>
+  
+      <div class="d-flex flex-row justify-content-between mb-3" style="color: #31b08f;">
+        <p class="display-10" style="font-size: 0.9em; margin-left: 20px; margin-top: -15px; margin-bottom: -50px; cursor: pointer;">View third party sources that may help assist in understanding the question.</p> 
+      </div> 
+      <hr style="margin-top: 35px"> 
+    </div>
+      <div id="sourceexternal" style="color: #31b08f;"></div>
+  
+  
+    <br>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/load.js"></script>
+</body>
