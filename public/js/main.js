@@ -205,9 +205,15 @@ auth.onAuthStateChanged(user => {
                     window.addEventListener('resize', searchResize);
                     function searchResize() {
                         widthvar = resultsearch.offsetWidth;
+                        // console.log(widthvar)
                         div4.style.width = widthvar-(offsetval)+"px"
                         marquee1.style.width = widthvar-(offsetval)+"px"
                         marquee1.style.textIndent = -(widthvar-(offsetval))+"px"
+                        if (widthvar > 462) {
+                            div2.style.height = "75px"
+                        } else {
+                            div2.style.height = "100px"
+                        }
                     }
                 
                     var div2  = document.createElement("div");
@@ -227,7 +233,7 @@ auth.onAuthStateChanged(user => {
                     bold1 = document.createElement("b");
                     bold1.id = "bold";
                     bold1.style = `style="border: 1px solid green;"`
-                    bold1.innerHTML = `${region} ${subject} | Year ${year} | ${section} | ${unit} | Question ${question} | ${tag}`;
+                    bold1.innerHTML = `${region} ${subject} Year ${year} ${section} ${unit} Question ${question} ${tag}`;
                 
                     var a1 = document.createElement("a");
                     a1.style = "color: grey";
@@ -277,6 +283,11 @@ auth.onAuthStateChanged(user => {
                     div4.style.width = widthvar-(offsetval)+"px"
                     marquee1.style.width = widthvar-(offsetval)+"px"
                     marquee1.style.textIndent = -(widthvar-(offsetval))+"px"
+                    if (widthvar > 462) {
+                        div2.style.height = "75px"
+                    } else {
+                        div2.style.height = "100px"
+                    }
                 
                 }
                 

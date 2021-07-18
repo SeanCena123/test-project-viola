@@ -14,14 +14,14 @@ require("firebase/firestore");
 var admin = require('firebase-admin');
 
 var config = {
-  apiKey: "AIzaSyBhMXBMkDgf5rmg6XEpRllsGCalgdoxQtk",
-  authDomain: "test-project-899c2.firebaseapp.com",
-  databaseURL: "https://test-project-899c2-default-rtdb.firebaseio.com",
-  projectId: "test-project-899c2",
-  storageBucket: "test-project-899c2.appspot.com",
-  messagingSenderId: "200667215684",
-  appId: "1:200667215684:web:3d03b2275c1c664bfa0911",
-  measurementId: "G-PTDY828H1D"
+  apiKey: process.env.APIKEY,
+  authDomain: process.env.AUTHDOMAIN,
+  databaseURL: process.env.DATABASEURL,
+  projectId: process.env.PROJECTID,
+  storageBucket: process.env.STORAGEBUCKET,
+  messagingSenderId: process.env.MESSAGINGSENDERID,
+  appId: process.env.APPID,
+  measurementId: process.env.MEASUREMENTID
 };
 firebase.initializeApp(config);
 admin.initializeApp(config);
@@ -140,11 +140,11 @@ var io = require('socket.io')(server);
 io.on('connection', function(socket) {
 	console.log("User: "+socket.id+", Connected.");
   
-  var ref = firebase.database().ref("users/ada");
-  ref.onDisconnect().update({
-    onlineState: false,
-    status: "I'm offline."
-  });
+  // var ref = firebase.database().ref("users/ada");
+  // ref.onDisconnect().update({
+  //   onlineState: false,
+  //   status: "I'm offline."
+  // });
 
   socket.on('active', function(data) {
     var ref = firebase.database().ref("users/ada");
