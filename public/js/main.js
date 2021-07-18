@@ -226,17 +226,17 @@ auth.onAuthStateChanged(user => {
                 
                     var div3 = document.createElement("div")
                     div3.className = "d-flex flex-column p-3";
-                    div3.style = "height: 80px;"
+                    div3.style = "height: 80px; font-size: 15px"
                 
                     var p1 = document.createElement("p");
-                    p1.className = "mb-2 main";
+                    p1.className = "mb-2";
                     bold1 = document.createElement("b");
                     bold1.id = "bold";
                     bold1.style = `style="border: 1px solid green;"`
                     bold1.innerHTML = `${region} ${subject} Year ${year} ${section} ${unit} Question ${question} ${tag}`;
                 
                     var a1 = document.createElement("a");
-                    a1.style = "color: grey";
+                    a1.style = "color: grey;";
                     a1.id = "hoverprinc";
                 
                     var small1 = document.createElement("small");

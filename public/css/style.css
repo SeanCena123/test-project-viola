@@ -173,11 +173,11 @@ input.form-control:focus {
 }
 
 .flex-column p {
-    font-size: 14px
+    font-size: 12.5px
 }
 
 span.mb-2 {
-    font-size: 12px;
+    font-size: 5px;
     color: white
 }
 
