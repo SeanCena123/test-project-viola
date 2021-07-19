@@ -57,7 +57,7 @@ auth.onAuthStateChanged(user => {
         
                 viewfiles.onclick = function changeContent() {
                     if (sourcepaperpdf.innerHTML == "") {
-                        content1 = datareqstore[1];
+                        content1 = questiondata[1];
                         var hr = document.createElement("hr");
                         hr.style = "width: 30%; margin-right: 1000px; height: 0.5px; "
                         sourcepaperpdf.appendChild(hr)
@@ -77,7 +77,7 @@ auth.onAuthStateChanged(user => {
         
                 viewfilessolution.onclick = function changeContent() {
                     if (sourcesolutionpdf.innerHTML == "") {
-                        content2 = datareqstore[5];
+                        content2 = questiondata[5];
                         var hr = document.createElement("hr");
                         hr.style = "width: 30%; margin-right: 1000px; height: 0.5px; "
                         sourcesolutionpdf.appendChild(hr)
@@ -97,7 +97,7 @@ auth.onAuthStateChanged(user => {
         
                 viewfileswritten.onclick = function changeContent() {
                     if (sourcewritten.innerHTML == "") {
-                        content3 = datareqstore[10];
+                        content3 = questiondata[10];
                         var p1 = document.createElement("p");
                         p1.style = "margin-left: 20px; font-size: 125%;";
                         p1.innerHTML = content3;
