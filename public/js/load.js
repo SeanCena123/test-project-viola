@@ -33,7 +33,7 @@ auth.onAuthStateChanged(user => {
             console.log(error.code)
             auth.signOut()
         });
-        
+
         socket.on('content', function(data) {
             if (data[1] == user.uid) {
                 content.innerHTML = data[0]
@@ -47,17 +47,13 @@ auth.onAuthStateChanged(user => {
                 sourcewritten = document.getElementById("sourcewritten")
                 console.log("user signed in")
                 console.log(user)
-                // document.getElementById('homeBody').style.visibility = "visible";
-                socket.emit('arrayrec', 'value')
-        
-                var datareqstore;
-                socket.on('arrayrec', async function(data) {
-                    datareqstore = await data
-                    examcontent.innerHTML = `${data[6]} ${data[11]} Examination Paper`
-                    titlecontent.innerHTML = `${data[6]} | ${data[11]} | ${data[3]} | ${data[8]} | ${data[4]} | Q${data[2]} | ${data[7]}`
-                    descriptioncontent.innerHTML = data[0]
-        
-                });
+                
+                var questiondata = localStorage.getItem("questiondata");
+                questiondata = (questiondata) ? JSON.parse(questiondata) : [];
+
+                examcontent.innerHTML = `${questiondata[6]} ${questiondata[11]} Examination Paper`
+                titlecontent.innerHTML = `${questiondata[6]} | ${questiondata[11]} | ${questiondata[3]} | ${questiondata[8]} | ${questiondata[4]} | Q${questiondata[2]} | ${questiondata[7]}`
+                descriptioncontent.innerHTML = questiondata[0]
         
                 viewfiles.onclick = function changeContent() {
                     if (sourcepaperpdf.innerHTML == "") {

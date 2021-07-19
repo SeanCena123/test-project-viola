@@ -277,10 +277,6 @@ io.on('connection', function(socket) {
       search: string,
       time: secondsSinceEpoch
     });
-    datareqstore = data[0]
-  });
-  socket.on('arrayrec', async function(data) {
-    socket.emit('arrayrec', datareqstore)
   });
 
 	socket.on('butinfo', async function(data) {

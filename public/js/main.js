@@ -211,6 +211,7 @@ auth.onAuthStateChanged(user => {
                 });
                 
                 function createButton(subject, year, section, unit, question, tag, description, region, data) {
+                    console.log(data)
                     var widthvar;
                     var offsetval = 50;
                     window.addEventListener('resize', searchResize);
@@ -231,6 +232,7 @@ auth.onAuthStateChanged(user => {
                     div2.className = "d-flex flex-row justify-content-between mb-3";
                     div2.id = "scrollable"
                     div2.onclick = function () {
+                        localStorage.setItem("questiondata", JSON.stringify(data));
                         socket.emit('arrayreq', [data, user.uid]);
                         window.location.href='/content';
                     } 
