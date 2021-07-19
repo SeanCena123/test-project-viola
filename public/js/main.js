@@ -5,6 +5,7 @@ var loadingicon;
 var resultsearch;
 var pagearr;
 var pageid;
+var subjectadd;
 
 var fbut;
 var sbut;
@@ -38,16 +39,20 @@ var content = document.getElementById("content");
 auth.onAuthStateChanged(user => {
     if (user) {
         firebase.auth().currentUser.getIdToken(false).then(function(idToken) {
-            socket.emit('content', [idToken, 2])  
+            socket.emit('content', [idToken, 2, user.uid])  
         }).catch((error) => {
             console.log(error.code)
             auth.signOut()
         });
 
-        socket.on('content', function(data) {
+        socket.on('content', async function(data) {
             if (data[1] == user.uid) {
                 // document.getElementById('homeBody').style.visibility = "visible";
-                content.innerHTML = data[0]
+                content.innerHTML = await data[0]
+
+                subjectadd = document.getElementById("subjectadd")
+                subjectadd.innerHTML += data[2]
+                
                 searchinput = document.getElementById("searchinput")
                 loadingicon = document.getElementById("loadingicon");
                 resultsearch = document.getElementById("resultsearch")
@@ -211,7 +216,6 @@ auth.onAuthStateChanged(user => {
                 });
                 
                 function createButton(subject, year, section, unit, question, tag, description, region, data) {
-                    console.log(data)
                     var widthvar;
                     var offsetval = 50;
                     window.addEventListener('resize', searchResize);

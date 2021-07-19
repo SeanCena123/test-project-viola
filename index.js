@@ -178,8 +178,6 @@ io.on('connection', function(socket) {
       uid = decodedToken.uid;
       var myDate2 = new Date((decodedToken.iat)*1000);
       var myDate = new Date((decodedToken.exp)*1000);
-      console.log(myDate2.toLocaleString())
-      console.log(myDate.toLocaleString())
       console.log(uid)
     }).catch((error) => {
       return console.log(error.message)
@@ -199,8 +197,23 @@ io.on('connection', function(socket) {
       break;
       case 2: //database content
         var ref = firebase.database().ref('content/database');
+
+        var subjects = [];
+        var refsub = firebase.database().ref('user-data/user-info/'+data[2]);
+        await refsub.once('value', function(snapshot) {
+          snapshot.forEach(function(_child) {
+            if (((_child.key)[0] == 's') && ((_child.key).length == 2)) {
+              subjects.push(_child.val())
+            }
+          });
+        });
+
+        var string = ''
+        for (var i = 0; i < subjects.length; i++) {
+          string += await `<a class="dropdown-item btn-sm" href="#" onclick='dropdowntagfilter("${subjects[i]}", 0)'>${subjects[i]}</a>`
+        }
         ref.once('value', function(snapshot) {
-          return socket.emit('content', [snapshot.val(), uid])
+          return socket.emit('content', [snapshot.val(), uid, string])
         });
       break;
       case 3: //question content
@@ -226,8 +239,20 @@ io.on('connection', function(socket) {
       search: data[2],
       time: secondsSinceEpoch
     });
+
     console.log("searching...")
 		arrres = []
+
+    var subjects = [];
+    var refsub = firebase.database().ref('user-data/user-info/'+data[1]);
+    await refsub.once('value', function(snapshot) {
+      snapshot.forEach(function(_child) {
+        if (((_child.key)[0] == 's') && ((_child.key).length == 2)) {
+          subjects.push(_child.val())
+        }
+      });
+    });
+
 		var ref1 = await firebase.database().ref('db-bank/');
 		await ref1.once('value', function(snapshot) {
 			snapshot.forEach(function(_child) {
@@ -242,7 +267,14 @@ io.on('connection', function(socket) {
 				}
 				temp.push(counter)
         if (temp[1] > 0) {
-          arrres.push(temp)
+          for (var j = 0; j < subjects.length; j++) {
+            var result = boyer_moore_horspool(society.toLowerCase(), subjects[j].toLowerCase())
+            if (result != -1) {
+              arrres.push(temp)
+              break;
+            }
+          }
+
         }
 				temp = []
 			});
