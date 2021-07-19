@@ -92,6 +92,11 @@ div.main {
     border: #00CCA1
 }
 
+/* .select2-results__option {
+    background-color: #00B8A1;
+    color: white;
+} */
+
 .btn:hover {
     background: #00B8A1;
     border: #00B8A1
@@ -261,3 +266,8 @@ h5 span {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #00B8A1;
+    color: white;
+}

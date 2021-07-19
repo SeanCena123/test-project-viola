@@ -1,13 +1,13 @@
 var socket = io.connect({secure: true}); 
 
-var viewfiles = document.getElementById("viewfiles")
-var sourcepaperpdf = document.getElementById("sourcepaperpdf"); //'Examination Paper' Content ***
+var viewfiles;
+var sourcepaperpdf;
 
-var viewfilessolution = document.getElementById("viewfilessolution")
-var sourcesolutionpdf = document.getElementById("sourcesolutionpdf")
+var viewfilessolution;
+var sourcesolutionpdf;
 
-var viewfileswritten = document.getElementById("viewfileswritten");
-var sourcewritten = document.getElementById("sourcewritten")
+var viewfileswritten;
+var sourcewritten;
 
 var config = {
     apiKey: "AIzaSyBhMXBMkDgf5rmg6XEpRllsGCalgdoxQtk",
@@ -23,17 +23,31 @@ firebase.initializeApp(config);
 firebase.analytics();
 const auth = firebase.auth();
 
-document.getElementById('homeBody').style.visibility = "hidden";
+// document.getElementById('homeBody').style.visibility = "hidden";
+var content = document.getElementById("content")
 auth.onAuthStateChanged(user => {
     if (user) {
         firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-            socket.emit('authtok', idToken)  
-        })
-        socket.on('authtok', function(data) {
-            if (data == user.uid) {
-                console.log("user signed in")
+            socket.emit('content', [idToken, 3])  
+        }).catch((error) => {
+            console.log(error.code)
+            auth.signOut()
+        });
+        
+        socket.on('content', function(data) {
+            if (data[1] == user.uid) {
+                content.innerHTML = data[0]
+                viewfiles = document.getElementById("viewfiles")
+                sourcepaperpdf = document.getElementById("sourcepaperpdf"); //'Examination Paper' Content ***
 
-                document.getElementById('homeBody').style.visibility = "visible";
+                viewfilessolution = document.getElementById("viewfilessolution")
+                sourcesolutionpdf = document.getElementById("sourcesolutionpdf")
+
+                viewfileswritten = document.getElementById("viewfileswritten");
+                sourcewritten = document.getElementById("sourcewritten")
+                console.log("user signed in")
+                console.log(user)
+                // document.getElementById('homeBody').style.visibility = "visible";
                 socket.emit('arrayrec', 'value')
         
                 var datareqstore;

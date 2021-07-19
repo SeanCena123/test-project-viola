@@ -1,10 +1,10 @@
 var socket = io.connect({secure: true}); 
 
-var searchinput = document.getElementById("searchinput")
-var loadingicon = document.getElementById("loadingicon");
-var resultsearch = document.getElementById("resultsearch")
-var pagearr = []
-var pageid = document.getElementById("pageid")
+var searchinput;
+var loadingicon;
+var resultsearch;
+var pagearr;
+var pageid;
 
 var fbut;
 var sbut;
@@ -33,17 +33,28 @@ firebase.initializeApp(config);
 firebase.analytics();
 const auth = firebase.auth();
 
-document.getElementById('homeBody').style.visibility = "hidden";
+// document.getElementById('homeBody').style.visibility = "hidden";
+var content = document.getElementById("content");
 auth.onAuthStateChanged(user => {
     if (user) {
         firebase.auth().currentUser.getIdToken(false).then(function(idToken) {
-            socket.emit('authtok', idToken)  
-        })
+            socket.emit('content', [idToken, 2])  
+        }).catch((error) => {
+            console.log(error.code)
+            auth.signOut()
+        });
 
-        socket.on('authtok', function(data) {
-            if (data == user.uid) {
-                document.getElementById('homeBody').style.visibility = "visible";
+        socket.on('content', function(data) {
+            if (data[1] == user.uid) {
+                // document.getElementById('homeBody').style.visibility = "visible";
+                content.innerHTML = data[0]
+                searchinput = document.getElementById("searchinput")
+                loadingicon = document.getElementById("loadingicon");
+                resultsearch = document.getElementById("resultsearch")
+                pagearr = []
+                pageid = document.getElementById("pageid")
                 console.log("user signed in")
+                console.log(user)
         
                 searchinput.addEventListener("keyup", function(event) {
                     event.preventDefault();
@@ -125,7 +136,7 @@ auth.onAuthStateChanged(user => {
                             };
                     
                             if ((arr2[0] !== "") && (arr2.length >= 1)) {
-                                socket.emit('search', arr2)
+                                socket.emit('search', [arr2, user.uid, searchinput.value])
                             } else {
                                 loadingicon.innerHTML = ""
                                 resultsearch.innerHTML = ""
@@ -220,7 +231,7 @@ auth.onAuthStateChanged(user => {
                     div2.className = "d-flex flex-row justify-content-between mb-3";
                     div2.id = "scrollable"
                     div2.onclick = function () {
-                        socket.emit('arrayreq', data);
+                        socket.emit('arrayreq', [data, user.uid]);
                         window.location.href='/content';
                     } 
                 

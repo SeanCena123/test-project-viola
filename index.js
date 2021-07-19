@@ -111,18 +111,11 @@ function textbold(haystack, needle) {
       offset += badMatchTable[haystack.toLowerCase()[offset + last]] || last || 1;
   }
 
-  // if (array.length == 0) {
-  //   array.push(0)
-  // }
-
   var position = needle.length
   var a = haystack
   var b = `<b style="color:darkcyan;">`
-  // var b = `<b>`
   var c = `</b>`
   var carr = [...array]
-  // console.log(carr)
-  // return 0
 
   for (var i = 0; i < carr.length; i++) {
       a = [a.slice(0, carr[i]+position), c, a.slice(carr[i]+position)].join(''); 
@@ -139,12 +132,6 @@ var io = require('socket.io')(server);
 
 io.on('connection', function(socket) {
 	console.log("User: "+socket.id+", Connected.");
-  
-  // var ref = firebase.database().ref("users/ada");
-  // ref.onDisconnect().update({
-  //   onlineState: false,
-  //   status: "I'm offline."
-  // });
 
   socket.on('active', function(data) {
     var ref = firebase.database().ref("users/ada");
@@ -154,20 +141,97 @@ io.on('connection', function(socket) {
     });
   });
 
-  socket.on('authtok', async function(idToken) {
+  socket.on('signup', async function(data) {
+    console.log(data)
+    const secondsSinceEpoch = Math.round(Date.now() / 1000)
+    var ref = firebase.database().ref(`user-data/user-info/${data[0]}`);
+    ref.update({
+      year: data[1],
+      first: data[2],
+      last: data[3],
+      email: data[4],
+      s1: data[5],
+      s2: data[6],
+      s3: data[7],
+      s4: data[8],
+      s5: data[9],
+      account: "student",
+      creation: secondsSinceEpoch
+    });
+
+  });
+
+  socket.once('signinsocket', async function (data) {
+    socket.emit('signinsocket', "value");
+  });
+
+  socket.once('signin', async function(data) {
+    var count;
+    var ref = firebase.database().ref('user-data/user-collect/'+data+"/login-history");
+    await ref.once("value", (snapshot) => {
+        count = snapshot.numChildren();
+    });
+    var refuser = firebase.database().ref('user-data/user-collect/'+data+"/login-history/"+count);
+    const secondsSinceEpoch = Math.round(Date.now() / 1000)
+    refuser.set({
+      time: secondsSinceEpoch
+    });
+  });
+
+  socket.once('content', async function(data) {
     var uid;
-    await admin.auth().verifyIdToken(idToken).then((decodedToken) => {
+    await admin.auth().verifyIdToken(data[0]).then((decodedToken) => {
       uid = decodedToken.uid;
+      var myDate2 = new Date((decodedToken.iat)*1000);
+      var myDate = new Date((decodedToken.exp)*1000);
+      console.log(myDate2.toLocaleString())
+      console.log(myDate.toLocaleString())
       console.log(uid)
     }).catch((error) => {
-      console.log(error.message)
+      return console.log(error.message)
     });
-    socket.emit('authtok', uid)
+    switch(data[1]) {
+      case 0: //signin content
+        var ref = firebase.database().ref('content/signin');
+        ref.once('value', function(snapshot) {
+          return socket.emit('content', [snapshot.val(), uid])
+        });
+      break;
+      case 1: //signup content
+        var ref = firebase.database().ref('content/signup');
+        ref.once('value', function(snapshot) {
+          return socket.emit('content', [snapshot.val(), uid])
+        });
+      break;
+      case 2: //database content
+        var ref = firebase.database().ref('content/database');
+        ref.once('value', function(snapshot) {
+          return socket.emit('content', [snapshot.val(), uid])
+        });
+      break;
+      case 3: //question content
+      var ref = firebase.database().ref('content/question');
+      ref.once('value', function(snapshot) {
+        return socket.emit('content', [snapshot.val(), uid])
+      });
+    break;
+    }
   });
 
   var arrtext;
 	socket.on('search', async function(data) {
-    arrtext = data;
+    arrtext = data[0];
+    var count;
+    var ref = firebase.database().ref(`user-data/user-collect/${data[1]}/search-history`);
+    await ref.once("value", (snapshot) => {
+        count = snapshot.numChildren();
+    });
+    var refuser = firebase.database().ref(`user-data/user-collect/${data[1]}/search-history/`+count);
+    const secondsSinceEpoch = Math.round(Date.now() / 1000)
+    refuser.update({
+      search: data[2],
+      time: secondsSinceEpoch
+    });
     console.log("searching...")
 		arrres = []
 		var ref1 = await firebase.database().ref('db-bank/');
@@ -176,8 +240,8 @@ io.on('connection', function(socket) {
 				var society = _child.key;
 				var temp = [society]
 				var counter = 0
-				for (var i = 0; i < data.length; i++) {
-					var result = boyer_moore_horspool(society.toLowerCase(), data[i])
+				for (var i = 0; i < arrtext.length; i++) {
+					var result = boyer_moore_horspool(society.toLowerCase(), arrtext[i])
 					if (result != -1) {
 						counter +=1
 					}
@@ -196,7 +260,24 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('arrayreq', async function(data) {
-    datareqstore = data
+    var count;
+    var string = '';
+    var ref = firebase.database().ref(`user-data/user-collect/${data[1]}/question-history`);
+    await ref.once("value", (snapshot) => {
+        count = snapshot.numChildren();
+    });
+    var refuser = firebase.database().ref(`user-data/user-collect/${data[1]}/question-history/`+count);
+    const secondsSinceEpoch = Math.round(Date.now() / 1000);
+    for (var i = 0; i < data[0].length; i++) {
+      if ((i == 6) || (i == 11) || (i == 4) || (i == 8) || (i == 2) || (i == 7) || (i == 3)) {
+        string += ` ${data[0][i]} `;
+      }
+    }
+    refuser.update({
+      search: string,
+      time: secondsSinceEpoch
+    });
+    datareqstore = data[0]
   });
   socket.on('arrayrec', async function(data) {
     socket.emit('arrayrec', datareqstore)
@@ -231,8 +312,6 @@ io.on('connection', function(socket) {
 	});
 
 });
-
-
 
 
 app.get('/login', async function(req, res) {
