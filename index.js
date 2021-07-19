@@ -127,19 +127,10 @@ function textbold(haystack, needle) {
   return a
 }
 
-var datareqstore;
 var io = require('socket.io')(server);
 
 io.on('connection', function(socket) {
 	console.log("User: "+socket.id+", Connected.");
-
-  socket.on('active', function(data) {
-    var ref = firebase.database().ref("users/ada");
-    ref.update({
-       onlineState: true,
-       status: "I'm online."
-    });
-  });
 
   socket.on('signup', async function(data) {
     console.log(data)
@@ -161,11 +152,14 @@ io.on('connection', function(socket) {
 
   });
 
-  socket.once('signinsocket', async function (data) {
-    socket.emit('signinsocket', "value");
+  //This is used to store when the user logs in
+  socket.on('signinsocket', async function (data) {
+    await socket.emit('signinsocket', "value");
+    console.log("sent signinsocket")
   });
 
   socket.once('signin', async function(data) {
+    console.log("sent signinsocket")
     var count;
     var ref = firebase.database().ref('user-data/user-collect/'+data+"/login-history");
     await ref.once("value", (snapshot) => {
