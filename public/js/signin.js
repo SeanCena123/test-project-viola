@@ -38,8 +38,8 @@ auth.onAuthStateChanged(user => {
                 console.log(user)
                 content.innerHTML = await data[0]
                 signoutbutton = document.getElementById(`signoutbutton`)
-                welcome = document.getElementById("welcome")
-                welcome.innerHTML = `Welcome ${user.email}`
+                welcome = document.getElementById("welcome");
+                welcome.innerHTML = `Welcome ${user.email}`;
 
                 signoutbutton.onclick = async function() {
                     console.log("You have signed out.")
@@ -51,7 +51,6 @@ auth.onAuthStateChanged(user => {
             }
         });
         socket.on('signinsocket', function (data) {
-            console.log("sent signinsocket")
             socket.emit('signin', user.uid);
         })
     } else {
@@ -75,7 +74,6 @@ function signin() {
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(async function(){
         await auth.signInWithEmailAndPassword(email, password).then(async function() {
             await socket.emit('signinsocket', 'value')
-            console.log("sent signinsocket")
         }).catch((error) => {
             errorplacementlogin.innerHTML = error.message
         });

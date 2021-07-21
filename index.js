@@ -12,6 +12,7 @@ require('firebase/database');
 require("firebase/firestore");
 
 var admin = require('firebase-admin');
+const { TIMEOUT } = require('dns');
 
 var config = {
   apiKey: process.env.APIKEY,
@@ -172,12 +173,31 @@ io.on('connection', function(socket) {
     });
   });
 
-  socket.once('content', async function(data) {
+  socket.on('subjectdropdown', async function(data) {
+    switch (data) {
+      case "Physics":
+        socket.emit('subjectdropdown', ['None', 'Special Relativity', 'Waves'])
+      break;
+      case "Methods":
+        socket.emit('subjectdropdown', ['None', 'Polynomial', 'Linear'])
+      break;
+      case "Chemistry":
+        socket.emit('subjectdropdown', ['None', 'Electrochemical', 'Cells'])
+      break;
+      case "Further":
+        socket.emit('subjectdropdown', ['None', 'Regression', 'Trigonometry'])
+      break;
+      default:
+        socket.emit('subjectdropdown', ['None'])
+      break;
+    }
+  });
+
+  socket.on('content', async function(data) {
+    console.log("content")
     var uid;
     await admin.auth().verifyIdToken(data[0]).then((decodedToken) => {
       uid = decodedToken.uid;
-      var myDate2 = new Date((decodedToken.iat)*1000);
-      var myDate = new Date((decodedToken.exp)*1000);
       console.log(uid)
     }).catch((error) => {
       return console.log(error.message)
@@ -219,11 +239,157 @@ io.on('connection', function(socket) {
       case 3: //question content
       var ref = firebase.database().ref('content/question');
       ref.once('value', function(snapshot) {
-        return socket.emit('content', [snapshot.val(), uid])
+        return socket.emit('content', [0, snapshot.val(), uid])
       });
-    break;
+      break;
+      case 4: //when clicking to delete a solution
+      var refuser = firebase.database().ref('db-bank/'+data[3]+'/solutions/'+data[2]); 
+      refuser.once('child_added', function(snapshot) {
+        return snapshot.ref.remove();
+      });
+      break;
+      case 5: //when clicking to add a solution
+      console.log("entered")
+      var refuser = firebase.database().ref('user-data/user-info/'+data[2].uid+"/account");
+      var first = firebase.database().ref('user-data/user-info/'+data[2].uid+"/first");
+      var last = firebase.database().ref('user-data/user-info/'+data[2].uid+"/last");
+      var solutions = firebase.database().ref('db-bank/'+data[4]+'/solutions');
+
+      refuser.once('value', async function(snapshot) {
+        var username = ''
+        var account;
+        if (snapshot.val() == "Teacher") {
+          var today = new Date();
+          var date = today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getFullYear();
+          await first.once('value', function(first) {
+            username += first.val()
+          });
+          await last.once('value', function(last) {
+            username += " "+last.val()
+          });
+          account = snapshot.val()
+  
+          var dataset = [date, username, account, data[3], data[2].uid]
+  
+          solutions.push({
+            date: dataset[0],
+            name: dataset[1],
+            accounttype: dataset[2],
+            URL: dataset[3],
+            uid: dataset[4]
+          });
+        }
+      });
+      break;
+      case 6:
+        var refuser = firebase.database().ref('user-data/user-info/'+data[2].uid+"/account");
+
+        var first = firebase.database().ref('user-data/user-info/'+data[2].uid+"/first");
+        var last = firebase.database().ref('user-data/user-info/'+data[2].uid+"/last");
+        var dataset;
+        var username = ''
+        var account;
+    
+        refuser.once('value', async function(snapshot) {
+          if (snapshot.val() == "Teacher") {
+            var today = new Date();
+            var date = today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getFullYear();
+            await first.once('value', function(first) {
+              username += first.val()
+            });
+            await last.once('value', function(last) {
+              username += " "+last.val()
+            });
+            account = snapshot.val()
+    
+            dataset = [date, username, account]
+            socket.emit('content', [1, dataset])
+          }
+        });
+      break;
     }
   });
+
+  // socket.on('tableactivity1', async function(data) {
+  //   var refuser = firebase.database().ref('user-data/user-info/'+data.uid+"/account");
+
+  //   var first = firebase.database().ref('user-data/user-info/'+data.uid+"/first");
+  //   var last = firebase.database().ref('user-data/user-info/'+data.uid+"/last");
+  //   var dataset;
+  //   var username = ''
+  //   var account;
+
+  //   refuser.once('value', async function(snapshot) {
+  //     if (snapshot.val() == "Teacher") {
+  //       var today = new Date();
+  //       var date = today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getFullYear();
+  //       await first.once('value', function(first) {
+  //         username += first.val()
+  //       });
+  //       await last.once('value', function(last) {
+  //         username += " "+last.val()
+  //       });
+  //       account = snapshot.val()
+
+  //       dataset = [date, username, account]
+  //       socket.emit('tableactivity1', dataset)
+  //     }
+  //   });
+  // });
+
+  socket.on('tabledata', async function(data) {
+    var ref = firebase.database().ref('content/teacher/addnewbutton');
+    var refuser = firebase.database().ref('user-data/user-info/'+data+"/account");
+    refuser.once('value', function(snapshot) {
+      if (snapshot.val() == "Teacher") {
+        ref.once('value', function(data) {
+          return socket.emit('tabledata', [data.val(), 1])
+        });
+      } else {
+        ref.once('value', function(data) {
+          return socket.emit('tabledata', [data.val(), 0])
+        });  
+      }
+    });
+  });
+
+  // socket.on('questionsub', async function(data) {
+  //   var refuser = firebase.database().ref('user-data/user-info/'+data[0].uid+"/account");
+  //   var first = firebase.database().ref('user-data/user-info/'+data[0].uid+"/first");
+  //   var last = firebase.database().ref('user-data/user-info/'+data[0].uid+"/last");
+  //   var solutions = firebase.database().ref('db-bank/'+data[2]+'/solutions');
+  //   // var count = 0;
+  //   // await solutions.once("value", (snapshot) => {
+  //   //   count = snapshot.numChildren();
+  //   // });
+
+  //   refuser.once('value', async function(snapshot) {
+  //     var username = ''
+  //     var account;
+  //     if (snapshot.val() == "Teacher") {
+  //       var today = new Date();
+  //       var date = today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getFullYear();
+  //       await first.once('value', function(first) {
+  //         username += first.val()
+  //       });
+  //       await last.once('value', function(last) {
+  //         username += " "+last.val()
+  //       });
+  //       account = snapshot.val()
+
+  //       var dataset = [date, username, account, data[1], data[0].uid]
+
+  //       // var refsol = firebase.database().ref('db-bank/'+data[2]+'/solutions/');
+  //       solutions.push({
+  //         date: dataset[0],
+  //         name: dataset[1],
+  //         accounttype: dataset[2],
+  //         URL: dataset[3],
+  //         uid: dataset[4]
+  //       });
+  //     }
+  //   });
+  // });
 
   var arrtext;
 	socket.on('search', async function(data) {
@@ -307,14 +473,40 @@ io.on('connection', function(socket) {
 
 	socket.on('butinfo', async function(data) {
     var array = []
-    for (var i = 0; i < data[0][((data[1])-1)].length; i++) {
-      var ref1 = await firebase.database().ref('db-bank/'+data[0][(data[1]-1)][i]);
+    var mysol;
+    var dataset = [];
+    for (var i = 0; i < data[0][0][((data[0][1])-1)].length; i++) {
+
+      var ref1 = firebase.database().ref('db-bank/'+data[0][0][(data[0][1]-1)][i]);
       await ref1.once('value', function(snapshot) {
         var temp = []
+        var count = 0;
         snapshot.forEach(function(_child) {
-          temp.push(_child.val())
+          count++
+          if ((count == 7) && (typeof _child.val() !== 'object')) {
+            temp.push([])
+            temp.push([])
+          }
+          mysol = [];
+          if ((count == 7) && (typeof _child.val() === 'object')) {
+            var temparr = [];
+            var dataset;
+            var mysol = []
+            _child.forEach(function(arr) {
+              dataset = [arr.key, arr.val().URL, arr.val().accounttype, arr.val().date, arr.val().name]
+              if (data[1] === arr.val().uid) {
+                temparr.push(arr.key)
+              }
+              mysol.push(dataset)
+            });
+            console.log(temparr)
+            temp.push(temparr)
+            temp.push(mysol)
+          } else {
+            temp.push(_child.val()) 
+          }
         });
-        
+
         var string = temp[0]
         if(typeof String.prototype.replaceAll == "undefined") {
           String.prototype.replaceAll = function(match, replace) {
@@ -326,8 +518,8 @@ io.on('connection', function(socket) {
           string = textbold(string, arrtext[j])
         }
         temp.push(string)
-
-        array.push(temp)
+        temp.push(data[0][0][(data[0][1]-1)][i])
+        array.push(temp) 
       });
     }
     socket.emit('butinfo', array)

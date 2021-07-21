@@ -58,6 +58,14 @@ auth.onAuthStateChanged(user => {
                 resultsearch = document.getElementById("resultsearch")
                 pagearr = []
                 pageid = document.getElementById("pageid")
+
+                var searchistory = localStorage.getItem("searchistory");
+                if (searchistory != '') {
+                    searchinput.value = searchistory
+                    search()
+                }
+
+
                 console.log("user signed in")
                 console.log(user)
         
@@ -73,6 +81,7 @@ auth.onAuthStateChanged(user => {
                 var startv;
                 var currentsearch = 0;
                 async function search() {
+                    localStorage.setItem("searchistory", searchinput.value);
                     if ((currentsearch == 0) || (currentsearch != searchinput.value)) {
                         resultamount.innerHTML = ""
                         loadingicon.innerHTML = `<div class="spinner-border spinner-border-sm text-success" role="status"><span class="sr-only">Loading...</span></div>`
@@ -210,7 +219,7 @@ auth.onAuthStateChanged(user => {
                     console.log(data)
                     resultsearch.innerHTML = ""
                     for (var i = 0; i < data.length; i++) {
-                        createButton(data[i][6], data[i][11], data[i][4], data[i][8], data[i][2], data[i][7], data[i][12], data[i][3], data[i])
+                        createButton(data[i][8], data[i][13], data[i][4], data[i][10], data[i][2], data[i][9], data[i][14], data[i][3], data[i])
                     }
                     loadingicon.innerHTML = ``
                 });
@@ -364,7 +373,7 @@ auth.onAuthStateChanged(user => {
                         loadingicon.innerHTML = `<div class="spinner-border spinner-border-sm text-success" role="status"><span class="sr-only">Loading...</span></div>`
                         startv = 0
                         pagearr[1] = currentpage 
-                        socket.emit('butinfo', pagearr)
+                        socket.emit('butinfo', [pagearr, user.uid])
                     }
                 }
                 
@@ -423,8 +432,9 @@ function dropdowntagfilter(value, id) {
         switch(id) {
               case 0:
                 dropdownMenuButtonsubject.innerHTML = "Subject";
+                dropdownMenuButtontopic.innerHTML = "Topic";
                 topicid.innerHTML = '';
-                  filterseperator("None");
+                filterseperator("None");
             break;
               case 1:
                 dropdownMenuButtonsource.innerHTML = "Source";
@@ -441,78 +451,53 @@ function dropdowntagfilter(value, id) {
         }	
     } else {
         switch(id) {
-              case 0:
-                  topicid.innerHTML = '';
-                  dropdownMenuButtonsubject.innerHTML = value;
+            case 0:
+                topicid.innerHTML = '';
+                dropdownMenuButtonsubject.innerHTML = value;
+                socket.emit("subjectdropdown", value)
+                socket.once('subjectdropdown', async function(data) {
+                    for (var i = 0; i < data.length; i++) {
+                        filterseperator(data[i])
+                    }
+                });
 
-                switch(value) {
-                    case "Methods":
-                          filterseperator("None");	
-                      break;
-                    case "Physics":
-                          filterseperator("None");
-                          filterseperator("Special Relativity");
-                          filterseperator("Wave Theory");		
-                      break;
-                    case "Chemistry":
-                          filterseperator("None");
-                      break;
-                    case "Further":
-                          filterseperator("None");
-                      break;
+                if (searchinput.value == '') {
+                    searchinput.value += value;	
+                } else {
+                    searchinput.value += " "+value;
                 }
-
-                  if (searchinput.value == '') {
-                    if (searchinput.value == '') {
-                        searchinput.value += value;	
-                    } 
-                  } else {
-                    searchinput.value += " "+value;
-                  }
             break;
-
-              case 1:
-                  dropdownMenuButtonsource.innerHTML = value;
-                  if (searchinput.value == '') {
-                    if (searchinput.value == '') {
-                        searchinput.value += value;	
-                    } 
-                  } else {
+            case 1:
+                dropdownMenuButtonsource.innerHTML = value;
+                if (searchinput.value == '') {
+                    searchinput.value += value;	
+                } else {
                     searchinput.value += " "+value;
-                  }
+                }
             break;
-
-              case 2:
-                  dropdownMenuButtonyear.innerHTML = value;
-                  if (searchinput.value == '') {
-                    if (searchinput.value == '') {
-                        searchinput.value += value;	
-                    } 
-                  } else {
+            case 2:
+                dropdownMenuButtonyear.innerHTML = value;
+                if (searchinput.value == '') {
+                    searchinput.value += value;	
+                } else {
                     searchinput.value += " "+value;
-                  }
+                }
             break;
-
-              case 3:
-                  dropdownMenuButtonunit.innerHTML = value;
-                  if (searchinput.value == '') {
-                    if (searchinput.value == '') {
-                        searchinput.value += value;	
-                    } 
-                  } else {
+            case 3:
+                dropdownMenuButtonunit.innerHTML = value;
+                if (searchinput.value == '') {
+                    searchinput.value += value;	
+                } else {
                     searchinput.value += " "+value;
-                  }
+                }
             break;
-
-              case 4:
-                  dropdownMenuButtontopic.innerHTML = value;
-                  if (searchinput.value == '') {
-                    if (searchinput.value == '') {
-                        searchinput.value += value;	
-                    } 
-                  } else {
+            case 4:
+                dropdownMenuButtontopic.innerHTML = value;
+                if (searchinput.value == '') {
+                    searchinput.value += value;	
+                } else {
                     searchinput.value += " "+value;
-                  }
+                }
             break;
         }
     }
