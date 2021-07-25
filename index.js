@@ -25,7 +25,22 @@ var config = {
   measurementId: process.env.MEASUREMENTID
 };
 firebase.initializeApp(config);
-admin.initializeApp(config);
+// admin.initializeApp(config);
+
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser')
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(cookieParser());
+
+admin.initializeApp({
+  credential: admin.credential.cert('./serviceAccountKeys.json'),
+  databaseURL: "https://test-project-899c2-default-rtdb.firebaseio.com"
+});
+
 
 app.use(express.static('public'));
 
@@ -527,6 +542,62 @@ io.on('connection', function(socket) {
 
 });
 
+app.use(attachCsrfToken('/', 'csrfToken', (Math.random()* 100000000000000000).toString()));
+/**
+ * Attaches a CSRF token to the request.
+ * @param {string} url The URL to check.
+ * @param {string} cookie The CSRF token name.
+ * @param {string} value The CSRF token value to save.
+ * @return {function} The middleware function to run.
+ */
+function attachCsrfToken(url, cookie, value) {
+  return function(req, res, next) {
+    if (req.url == url) {
+      res.cookie(cookie, value);
+    }
+    next();
+  }
+}
+
+app.post('/sessionLogin', function (req, res) {
+  console.log("/sessionLogin")
+  // Get ID token and CSRF token.
+  const idToken = req.body.idToken.toString();
+  const csrfToken = req.body.csrfToken.toString();
+  console.log(req.body.csrfToken.toString())
+
+  // Guard against CSRF attacks.
+  if (csrfToken !== req.cookies.csrfToken) {
+    console.log('UNAUTHORIZED REQUEST!')
+    res.status(401).send('UNAUTHORIZED REQUEST!');
+    return;
+  }
+  // Set session expiration to 5 days.
+  const expiresIn = 60 * 60 * 24 * 5 * 1000;
+  // Create the session cookie. This will also verify the ID token in the process.
+  // The session cookie will have the same claims as the ID token.
+  // We could also choose to enforce that the ID token auth_time is recent.
+  admin.auth().verifyIdToken(idToken).then(function(decodedClaims) {
+     console.log("verifyIDToken app.js")
+    // In this case, we are enforcing that the user signed in in the last 5 minutes.
+    if ((((new Date().getTime())/1000)-decodedClaims.auth_time) < (5*60)) {
+      console.log("createSessionCookie")
+      return admin.auth().createSessionCookie(idToken, {expiresIn: expiresIn});
+    }
+    throw new Error('UNAUTHORIZED REQUEST!');
+  })
+  .then(function(sessionCookie) {
+    // Note httpOnly cookie will not be accessible from javascript.
+    // secure flag should be set to true in production.
+    const options = {maxAge: expiresIn, httpOnly: true, secure: false /** to test in localhost */};
+    res.cookie('session', sessionCookie, options);
+    console.log("success")
+    res.end(JSON.stringify({status: 'success'})); //This does something to move to /profile
+  })
+  .catch(function(error) {
+    res.status(401).send('UNAUTHORIZED REQUEST!');
+  });
+});
 
 app.get('/login', async function(req, res) {
 	res.render('login');
