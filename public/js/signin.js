@@ -89,7 +89,7 @@ const handleSignedInUser = function(user) {
       // Session login endpoint is queried and the session cookie is set.
       // CSRF token should be sent along with request.
       const csrfToken = getCookie('csrfToken')
-      //RETURN BECUASE AFTER RES.END IN THE SERVER.JS OCCURS THEN IT GOES TO THE .THEN IN THIS FUNCTION.
+      //RETURN BECUASE AFTER RES.END IN THE SERVER.JS OCCURS THEN IT GOES TO THE .THEN IN THIS FUNCTION.A
       return postIdTokenToSessionLogin('/sessionLogin', idToken, csrfToken)
         .then(function() {
           //REDIRECTS TO THE /PROFILE AFTER RES.END HAPPENS IN THE SERVER
